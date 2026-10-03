@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: config-secret-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: config-secret-demo
+  template:
+    metadata:
+      labels:
+        app: config-secret-demo
+    spec:
+      containers:
+      - name: app
+        image: config-secret-demo:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8000
+        envFrom:
+        - configMapRef:
+            name: deployment-config
+        - secretRef:
+            name: deployment-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: config-secret-demo
+spec:
+  selector:
+    app: config-secret-demo
+  ports:
+  - port: 8000
+    targetPort: 8000
+  type: ClusterIP
